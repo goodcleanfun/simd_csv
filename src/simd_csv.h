@@ -8,7 +8,7 @@
 #include "aligned/aligned.h"
 #include "bit_utils/bit_utils.h"
 #include "really_inline/really_inline.h"
-#include "simde_avx2/simde_avx2.h"
+#include "simde_avx2/avx2.h"
 #include "simde_clmul/clmul.h"
 
 
@@ -25,13 +25,13 @@ really_inline simd_csv_input_t simd_csv_fill_input(const uint8_t *buffer) {
     return input;
 }
 
-really_inlint uint64_t simd_csv_cmp_mask_against_input(simd_csv_input_t input, uint8_t m) {
+really_inline uint64_t simd_csv_cmp_mask_against_input(simd_csv_input_t input, uint8_t m) {
     const simde__m256i mask = simde_mm256_set1_epi8(m);
     simde__m256i cmp_res_0 = simde_mm256_cmpeq_epi8(input.lo, mask);
     uint64_t res_0 = (uint32_t)(simde_mm256_movemask_epi8(cmp_res_0));
     simde__m256i cmp_res_1 = simde_mm256_cmpeq_epi8(input.hi, mask);
     uint64_t res_1 = simde_mm256_movemask_epi8(cmp_res_1);
-    return = res_0 | (res_1 << 32);
+    return res_0 | (res_1 << 32);
 }
 
 really_inline uint64_t simd_csv_quote_mask(const uint8_t *buffer, uint64_t *prev_inside_quote) {
