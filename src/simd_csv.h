@@ -125,14 +125,14 @@ bool simd_csv_find_indexes(const uint8_t *buffer, size_t len, uint32_index_array
     uint64_t prev_inside_quote = 0ULL;
 
     uint64_t prev_cr_end = 0ULL;
-    size_t len_last_64 = len < 64 ? 0 : len - (len % 64);
+    size_t len_minus_64 = len < 64 ? 0 : len - 64;
     size_t idx = 0;
 
     #define SIMD_CSV_BUFFER_SIZE 4
-    if (len_last_64 > 64 * SIMD_CSV_BUFFER_SIZE) {
+    if (len_minus_64 > 64 * SIMD_CSV_BUFFER_SIZE) {
         uint64_t fields[SIMD_CSV_BUFFER_SIZE] = {0ULL};
         uint32_t buffer_indexes[SIMD_CSV_BUFFER_SIZE * 64] = {0};
-        for (idx = 0; idx < len_last_64 - (len_last_64 % (64 * SIMD_CSV_BUFFER_SIZE)); idx += 64 * SIMD_CSV_BUFFER_SIZE) {
+        for (idx = 0; idx < len_minus_64 - (len_minus_64 % (64 * SIMD_CSV_BUFFER_SIZE)); idx += 64 * SIMD_CSV_BUFFER_SIZE) {
             for (size_t b = 0; b < SIMD_CSV_BUFFER_SIZE; b++) {
                 size_t internal_idx = 64 * b + idx;
                 #ifndef _MSC_VER
@@ -164,7 +164,7 @@ bool simd_csv_find_indexes(const uint8_t *buffer, size_t len, uint32_index_array
         }
     }
 
-    for (; idx < len_last_64; idx += 64) {
+    for (; idx < len_minus_64; idx += 64) {
         #ifndef _MSC_VER
         __builtin_prefetch(buffer + idx + 128);
         #endif
